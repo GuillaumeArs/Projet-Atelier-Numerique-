@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Move</title>
+
+  <!-- Police d'affichage (Anton) et police de corps (DM Sans) -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Feuille de style Leaflet (bibliothèque de carte interactive) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+  <!-- Feuille de style principale de l'application -->
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CONTENEUR PRINCIPAL DE L'APPLICATION
+  ══════════════════════════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- ══════════════════════════════════════════
+         BARRE LATÉRALE DE NAVIGATION 
+    ══════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Moitié haute — accès au Chatbot -->
+      <div class="sb-btn active" id="sb-chatbot" onclick="goHome()">
+        <span class="sb-label">Chatbot</span>
+      </div>
+
+      <!-- Moitié basse — accès aux Actualités -->
+      <div class="sb-btn inactive" id="sb-actu" onclick="goActu()">
+        <span class="sb-label">Actualité</span>
+      </div>
+
+    </aside>
+
+    <!-- ══════════════════════════════════════════
+         ZONE DE CONTENU PRINCIPALE
+    ══════════════════════════════════════════ -->
+    <div class="main">
+
+      <!-- ─────────────────────────────────────────────
+           PAGE ACCUEIL
+      ───────────────────────────────────────────── -->
+      <div id="page-home" class="page active">
+
+        <!-- Titre principal -->
+        <h1 class="home-title">Smart Move</h1>
+
+       
+        <div class="home-search-row">
+          <div class="home-search-wrap">
+            <input
+              id="home-input"
+              class="home-search-input"
+              type="text"
+              placeholder="Comment puis-je vous aider ??"
+              onkeydown="if(event.key==='Enter') homeSubmit()"
+            />
+            <button class="home-search-btn" onclick="homeSubmit()">&#10148;</button>
+          </div>
+        </div>
+
+    
+        <div class="home-cols">
+
+     
+          <div class="home-col">
+            <h3>ChatBot Meteo / Actualité / Evenement</h3>
+            <ul>
+              <li onclick="startChat('Quels événements sur Toulouse ?')">Quels événements sur Toulouse ?</li>
+              <li onclick="startChat('Aller à Albi en Train')">Aller à Albi en Train</li>
+            </ul>
+            <span class="badge">Infos</span>
+            <p class="desc">
+              Le ChatBot qui vous parle pour les sujets ci-dessous, est une IA entraînée,
+              mais attention il ne vous répondra pas sur des questions hors sujet !
+            </p>
+          </div>
+
+ 
+          <div class="home-col">
+            <h3>ChatBot Transport Tisseo Toulouse :</h3>
+            <ul>
+              <li onclick="startChat('Comment aller de Jean Jaurès a Purpan ?')">Comment aller de Jean Jaures a Purpan ?</li>
+              <li onclick="startChat('Aller de Purpan a Rangueil ?')">Aller de Purpan a Rangueil ?</li>
+            </ul>
+            <span class="badge">Astuce</span>
+            <p class="desc">
+              Une fois votre demande effectuée le bot pourra vous demander d'apporter plus
+              d'information sur l'arrêt que vous avez choisi, suivez l'instruction et tout ira bien !
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ─────────────────────────────────────────────
+           PAGE CHAT
+      ───────────────────────────────────────────── -->
+      <div id="page-chat" class="page">
+
+        <!-- En-tête avec bouton retour et titre -->
+        <div class="chat-header">
+          <button class="btn-retour" onclick="goHome()">&#8592; Retour</button>
+          <span class="chat-header-title">SMART MOVE</span>
+        </div>
+
+        <!-- Zone de défilement des messages -->
+        <div class="chat-messages" id="chat-messages"></div>
+
+        <!-- Barre de saisie du chat -->
+        <div class="chat-input-area">
+          <div class="chat-input-inner">
+            <input
+              id="chat-input"
+              class="chat-input"
+              type="text"
+              placeholder="Posez votre question…"
+              onkeydown="if(event.key==='Enter') chatSubmit()"
+            />
+            <button class="chat-send-btn" id="chat-send-btn" onclick="chatSubmit()">
+              &#10148;
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /page-chat -->
+
+
+      <!-- ─────────────────────────────────────────────
+           PAGE ITINÉRAIRE
+      ───────────────────────────────────────────── -->
+      <div id="page-itin" class="page">
+
+   
+        <div class="itin-page-header">
+          <button class="btn-retour" id="itin-btn-retour" onclick="goChat()">&#8592; Retour</button>
+          <span class="itin-page-title">Smart Move</span>
+        </div>
+
+      
+        <div class="itin-page-body">
+
+       
+          <div class="itin-page-intro" id="itin-intro">
+            Parfait, ne bougez pas, voici les possibilité :
+          </div>
+
+          
+          <div class="itin-page-steps" id="itin-steps"></div>
+
+    
+          <div class="itin-page-map-wrap">
+            <div id="leaflet-map-page"></div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ─────────────────────────────────────────────
+           PAGE ACTUALITÉS
+      ───────────────────────────────────────────── -->
+      <div id="page-actu" class="page">
+
+      
+        <div class="actu-header">
+          <h2>Actualité</h2>
+        </div>
+
+       
+        <div class="actu-body" id="actu-body">
+          <div class="actu-card">
+            <div class="skel" style="width:38%;height:10px"></div>
+            <div class="skel" style="width:92%"></div>
+            <div class="skel" style="width:78%"></div>
+            <div class="skel" style="width:60%"></div>
+          </div>
+        </div>
+
+      </div><!-- /page-actu -->
+
+    </div><!-- /main -->
+
+  </div><!-- /app -->
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+
+  <script src="static/js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,771 @@
+
+
+/* ══════════════════════════════════════════════════════════
+   1. RESET & VARIABLES GLOBALES
+══════════════════════════════════════════════════════════ */
+
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+:root {
+  --sidebar-w : 190px;          
+  --grey      : #000000;       
+  --border    : #d0d0d0;        
+  --black     : #0d0d0d;       
+  --white     : #ffffff;       
+  --bg-chat   : #f7f7f8;        
+  --font-disp : 'Anton', 'Arial Black', sans-serif;  
+  --font-body : 'DM Sans', 'Arial', sans-serif;       
+}
+
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-body);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   2. MISE EN PAGE PRINCIPALE
+══════════════════════════════════════════════════════════ */
+
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   3. SIDEBAR — navigation 50/50
+══════════════════════════════════════════════════════════ */
+
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: var(--white);
+  padding: 0;
+  gap: 0;
+}
+
+.sb-btn {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+
+.sb-btn.inactive { background: var(--grey); }
+.sb-btn.active   { background: var(--white); }
+
+
+.sb-btn:first-child.inactive { border-radius: 0 0 14px 0; }
+.sb-btn:last-child.inactive  { border-radius: 0 14px 0 0; }
+
+.sb-btn.inactive:hover { filter: brightness(0.93); }
+
+/* Libellé du bouton sidebar */
+.sb-label {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  text-align: center;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   4. ZONE PRINCIPALE 
+══════════════════════════════════════════════════════════ */
+
+
+.main {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.page {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+}
+
+
+.page.active { display: flex; }
+
+
+/* ══════════════════════════════════════════════════════════
+   5. PAGE ACCUEIL
+══════════════════════════════════════════════════════════ */
+
+#page-home {
+  align-items: center;
+  justify-content: center;
+  padding: 0 72px 80px;
+  background: var(--white);
+  gap: 0;
+  overflow-y: auto;
+}
+
+/* Titre principal  */
+.home-title {
+  font-family: var(--font-disp);
+  font-size: clamp(64px, 9vw, 112px);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  text-align: center;
+  color: var(--black);
+  margin-bottom: 120px;
+  margin-top: 185px;
+}
+
+/* Ligne contenant la barre de recherche */
+.home-search-row {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 150px;
+}
+
+/* Barre de recherche  */
+.home-search-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border: 1.5px solid #d0d0d0;
+  border-radius: 28px;
+  padding: 6px 8px 6px 22px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Effet focus sur la barre de recherche */
+.home-search-wrap:focus-within {
+  border-color: #888;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Champ de saisie de la barre d'accueil */
+.home-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #333;
+  padding: 7px 0;
+}
+.home-search-input::placeholder { color: #bbb; }
+
+/* Bouton d'envoi circulaire */
+.home-search-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 15px;
+  transition: background 0.15s, transform 0.1s;
+}
+.home-search-btn:hover { background: #333; transform: scale(1.06); }
+
+/* Grille de suggestions en deux colonnes */
+.home-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Carte de suggestion */
+.home-col {
+  background: var(--white);
+  border: 1.5px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 24px 26px;
+}
+
+.home-col h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--black);
+}
+
+/* Liste de questions suggérées, sans puces */
+.home-col ul { list-style: none; margin-bottom: 10px; }
+.home-col ul li {
+  font-size: 13px;
+  padding: 4px 0;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.15s;
+}
+.home-col ul li::before { content: '— '; color: #888; }
+.home-col ul li:hover { color: #000; text-decoration: underline; }
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 3px 13px;
+  border: 1.5px solid #bbb;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+  background: #f5f5f5;
+  margin: 5px 0 9px;
+}
+
+/* Description en bas de chaque carte de suggestion */
+.home-col p.desc {
+  font-size: 12.5px;
+  color: #666;
+  line-height: 1.55;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   6. PAGE CHAT — style ChatGPT
+══════════════════════════════════════════════════════════ */
+
+#page-chat {
+  background: var(--bg-chat);
+}
+
+/* ── En-tête du chat ── */
+.chat-header {
+  background: var(--white);
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chat-header-title {
+  font-family: var(--font-disp);
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  color: var(--black);
+  text-transform: uppercase;
+}
+
+/* Bouton "← Retour" positionné à gauche dans le header */
+.btn-retour {
+  position: absolute;
+  left: 20px;
+  padding: 6px 15px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s;
+}
+.btn-retour:hover { background: #333; }
+
+/* ── Zone de messages ── */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-chat);
+  scroll-behavior: smooth;
+}
+
+
+.msg-row {
+  width: 100%;
+  display: flex;
+  padding: 0 24px;
+}
+.msg-row.user { justify-content: flex-end; }
+.msg-row.bot  { justify-content: flex-start; }
+
+/* Bulle de message utilisateur */
+.bubble-user {
+  max-width: 62%;
+  background: var(--black);
+  color: var(--white);
+  border-radius: 20px 20px 4px 20px;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Bulle de message du bot */
+.bubble-bot {
+  max-width: 72%;
+  background: var(--white);
+  color: var(--black);
+  border-radius: 20px 20px 20px 4px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #ebebeb;
+}
+
+/* ── Indicateur de frappe (trois points animés) ── */
+.bubble-typing {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 14px 20px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #ebebeb;
+}
+
+/* Chaque point de l'indicateur */
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #bbb;
+  animation: bounce 0.9s infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-5px); }
+}
+
+/* ── Désambiguïsation (choix d'arrêt) ── */
+.disambig-wrap {
+  max-width: 72%;
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.disambig-intro {
+  font-size: 13.5px;
+  color: #444;
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.disambig-choices { display: flex; flex-direction: column; gap: 7px; }
+
+/* Bouton de choix d'arrêt */
+.disambig-choice-btn {
+  text-align: left;
+  background: #f5f5f5;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  color: var(--black);
+}
+.disambig-choice-btn:hover {
+  background: #ebebeb;
+  border-color: #bbb;
+}
+
+/* ── Affichage d'itinéraire dans le chat ── */
+.itin-wrap {
+  max-width: 74%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.itin-intro-bar {
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  color: #444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.itin-steps-card {
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Ligne représentant un segment de l'itinéraire */
+.itin-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Pastille d'arrêt */
+.step-pill {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Flèche de direction entre deux arrêts */
+.step-arrow {
+  color: #666;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Carte Leaflet ── */
+.map-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+#leaflet-map { width: 100%; height: 260px; }
+
+/* ── Bande d'alerte / perturbation ── */
+.alert-strip {
+  background: #fff8e1;
+  border-left: 3px solid #f0a500;
+  border-radius: 0 10px 10px 0;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #7a4f00;
+}
+
+/* ── Barre de saisie du chat ── */
+.chat-input-area {
+  background: var(--bg-chat);
+  padding: 16px 24px 20px;
+  flex-shrink: 0;
+}
+
+/* Conteneur centré de la barre de saisie */
+.chat-input-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border: 1.5px solid #d0d0d0;
+  border-radius: 28px;
+  padding: 6px 8px 6px 22px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.chat-input-inner:focus-within {
+  border-color: #888;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Champ de saisie du chat */
+.chat-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--black);
+  padding: 6px 0;
+  resize: none;
+  max-height: 120px;
+  line-height: 1.5;
+}
+.chat-input::placeholder { color: #aaa; }
+
+/* Bouton d'envoi du chat */
+.chat-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+  font-size: 15px;
+}
+.chat-send-btn:hover    { background: #333; transform: scale(1.05); }
+.chat-send-btn:disabled { background: #ccc; cursor: default; transform: none; }
+
+
+/* ══════════════════════════════════════════════════════════
+   7. PAGE ITINÉRAIRE — vue dédiée pleine page
+══════════════════════════════════════════════════════════ */
+
+#page-itin {
+  background: var(--white);
+  overflow: hidden; 
+}
+
+/* En-tête de la page itinéraire */
+.itin-page-header {
+  background: var(--white);
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0 24px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Titre principal "Smart Move" dans l'en-tête */
+.itin-page-title {
+  font-family: var(--font-disp);
+  font-size: 34px;
+  letter-spacing: 0.04em;
+  color: var(--black);
+}
+
+/* Corps de la page — défilable */
+.itin-page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 48px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--white);
+}
+
+
+.itin-page-intro {
+  width: 100%;
+  background: var(--white);
+  border: 1.5px solid #d0d0d0;
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Conteneur de toutes les lignes d'étapes */
+.itin-page-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+
+.itin-step-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Pastille de nom d'arrêt (départ ou arrivée) */
+.itin-step-pill {
+  background: var(--white);
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--black);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 120px;
+  text-align: center;
+}
+
+/*
+ * Connecteur central : texte descriptif entre les deux pastilles.
+ * Remplace les anciens tirets — la phrase est centrée et prend l'espace disponible.
+ */
+.itin-step-connector {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+/* Phrase décrivant le segment : "🚌 4 arrêts en bus · ligne L5" */
+.itin-step-phrase {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bande d'alerte sur la page itinéraire */
+.itin-page-alert {
+  background: #fff8e1;
+  border-left: 3px solid #f0a500;
+  border-radius: 0 10px 10px 0;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #7a4f00;
+}
+
+/* Conteneur de la carte Leaflet (plus grand que dans le chat) */
+.itin-page-map-wrap {
+  width: 100%;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Hauteur de la carte sur la page dédiée */
+#leaflet-map-page {
+  width: 100%;
+  height: 360px;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   8. PAGE ACTUALITÉS
+══════════════════════════════════════════════════════════ */
+
+#page-actu { background: var(--white); }
+
+/* En-tête de la page actualités */
+.actu-header {
+  padding: 26px 48px 18px;
+  border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.actu-header h2 {
+  font-family: var(--font-disp);
+  font-size: clamp(40px, 6vw, 68px);
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--black);
+}
+
+/* Zone de défilement des actualités */
+.actu-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 26px 32px;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+}
+
+/* Carte d'une actualité */
+.actu-card {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px 26px;
+}
+
+.actu-card .label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #999;
+  margin-bottom: 7px;
+}
+
+.actu-card .titre  { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+.actu-card .resume { font-size: 13px; color: #555; line-height: 1.5; }
+
+
+.actu-card .point-list { margin-top: 10px; list-style: none; }
+.actu-card .point-list li { font-size: 13px; color: #444; padding: 3px 0; }
+.actu-card .point-list li::before { content: '→ '; color: #aaa; }
+
+
+/* ══════════════════════════════════════════════════════════
+   9. SKELETON LOADER (état de chargement)
+══════════════════════════════════════════════════════════ */
+
+
+.skel {
+  background: linear-gradient(90deg, #eee 25%, #e0e0e0 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 4px;
+  height: 13px;
+  margin-bottom: 8px;
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
