@@ -9,7 +9,7 @@ try:
     GROQ_DISPONIBLE = True
 except ImportError:
     GROQ_DISPONIBLE = False
-    print("⚠️  pip install groq manquant — fallback TF-IDF actif")
+   
 
 # ─── CONFIG ──────────────────────────────────────────────────────────────────
 DB_CONFIG = {
@@ -20,7 +20,7 @@ DB_CONFIG = {
     'port':     '5433'
 }
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "mykey"
 GROQ_MODEL   = "llama-3.1-8b-instant"
 
 SYSTEM_PROMPT = (
