@@ -5,7 +5,7 @@ from datetime import datetime
 
 # API gratuite OpenWeatherMap
 
-API_KEY = "839ef28b47dba637fc3f2375e10d8cda" 
+API_KEY = "mykey" 
 BASE_URL = "https://api.openweathermap.org/data/2.5"
 
 def get_meteo_toulouse():
